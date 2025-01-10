@@ -25,6 +25,10 @@ function MainWindow({ style }) {
                 return response.text(); // Change to text to handle potential HTML response
             })
             .then(text => {
+                console.log('Response text:', text); // Debugging line
+                if (text.startsWith('<')) {
+                    throw new Error('Received HTML instead of JSON');
+                }
                 try {
                     const data = JSON.parse(text); // Parse JSON safely
                     setDataList(data);
