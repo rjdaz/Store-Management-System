@@ -17,7 +17,7 @@ function MainWindow({ style }) {
     const [selectedProduct, setSelectedProduct] = useState(null);
 
     useEffect(() => {
-        fetch('https://store-management-system-amkc.onrender.com/store')
+        fetch('https://store-management-system-amkc.onrender.com/api/store')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -181,7 +181,7 @@ function MainWindow({ style }) {
                                     return;
                                 }
                         
-                                fetch('https://store-management-system-amkc.onrender.com/store')
+                                fetch('https://store-management-system-amkc.onrender.com/api/store')
                                     .then(response => response.json())
                                     .then(data => {
                                         let findMatchProd = data.find(product => product.name === newProdItem);
@@ -189,7 +189,7 @@ function MainWindow({ style }) {
                                         if (findMatchProd) {
                                             alert('Already have that Product Name');
                                         } else {
-                                            fetch('https://store-management-system-amkc.onrender.com/store', {
+                                            fetch('https://store-management-system-amkc.onrender.com/api/store', {
                                                 method: 'POST',
                                                 headers: {
                                                     'Content-Type': 'application/json'
