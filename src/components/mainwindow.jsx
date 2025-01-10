@@ -17,7 +17,7 @@ function MainWindow({ style }) {
     const [selectedProduct, setSelectedProduct] = useState(null);
 
     useEffect(() => {
-        fetch('https://store-management-system-amkc.onrender.com/store')
+        fetch('https://store-management-system-amkc.onrender.com/api/store')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
