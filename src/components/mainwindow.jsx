@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './mainwindow.css'
-import { dataStorage, setDataProdList } from './dataStorage.js'
 import Update from './update.jsx'
 
 function MainWindow({ style }) {
 
-    const [dataList, setDataList] = useState(dataStorage());
+    const [dataList, setDataList] = useState([]);
     const [inputSearch, setInputSearch] = useState(''); // for searching data
     const [inputNewProd, setInputNewProd] = useState(''), // data input
           [inputInvest, setInputInvest] = useState(''),
@@ -18,10 +17,10 @@ function MainWindow({ style }) {
     const [selectedProduct, setSelectedProduct] = useState(null);
 
     useEffect(() => {
-        const handleStorageUpdate = () => setDataList(dataStorage());
-        window.addEventListener('dataProdListUpdated', handleStorageUpdate);
-
-        return () => window.removeEventListener('dataProdListUpdated', handleStorageUpdate);
+        fetch('https://store-system-3kic.onrender.com/store')
+            .then(response => response.json())
+            .then(data => setDataList(data))
+            .catch(error => console.error('Error fetching data:', error));
     }, []);
 
     function clearData() {
@@ -60,56 +59,25 @@ function MainWindow({ style }) {
                     {/* Main Product List */}
                     <div className='body-table' id='dataLists'>
                         {/* data list */}
-                        {(() => {
-                            let searchValue = inputSearch.trim().toUpperCase();
-                    
-                            if (searchValue === "") {
-                                return dataList
-                                    .filter((data) => data.prodname.toUpperCase().includes(searchValue))
-                                    .sort((a, b) => a.prodname.localeCompare(b.prodname))
-                                    .map((data, index) => (
-                                    <div key={index} className="prodNames" id={`prodInfo-${index}`} data-index={index}>
-                                        <button onClick={(e) => {
-                                            const windUpdate = document.querySelector('.viewData');
-                                            let addWindow = document.getElementById('windowForAddItem');
+                        {dataList
+                        .filter((data) => data.name.toUpperCase().includes(inputSearch.trim().toUpperCase()))
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map((data, index) => (
+                            <div key={index} className="prodNames" id={`prodInfo-${index}`} data-index={index}>
+                                <button onClick={() => {
+                                    const windUpdate = document.querySelector('.viewData');
+                                    let addWindow = document.getElementById('windowForAddItem');
 
-                                            addWindow.style.zIndex = "-1";
-                                            addWindow.style.opacity = "0";
-                                            windUpdate.style.zIndex = "2";
+                                    addWindow.style.zIndex = "-1";
+                                    addWindow.style.opacity = "0";
+                                    windUpdate.style.zIndex = "2";
 
-                                            setSelectedProduct(data);
-                                                
-                                    }}>&#9780;</button>
-                                        <p>P-Name: {data.prodname}</p>
-                                        <p>Retail: &#8369; {data.retail}</p>    
-                                    </div>
-                                ));
-                            } else {
-                                let filteredData = dataList.filter((data) =>
-                                    data.prodname.toUpperCase().includes(searchValue)
-                                  );
-
-                                return filteredData
-                                    .filter((data) => data.prodname.toUpperCase().includes(searchValue))
-                                    .sort((a, b) => a.prodname.localeCompare(b.prodname))
-                                    .map((data, index) => (
-                                    <div key={index} className="prodNames" id={`prodInfo-${index}`} data-index={index} >
-                                        <button onClick={(e) => {
-                                            const windUpdate = document.querySelector('.viewData')
-                                            let addWindow = document.getElementById('windowForAddItem');
-
-                                            addWindow.style.zIndex = "-1";
-                                            addWindow.style.opacity = "0";
-                                            windUpdate.style.zIndex = "2";
-                                            setSelectedProduct(data);
-                                                                
-                                    }}>&#9780;</button>
-                                        <p>P-Name: {data.prodname}</p>
-                                        <p>Retail: &#8369; {data.retail}</p>
-                                    </div>
-                                    ));
-                            }
-                        })()}
+                                    setSelectedProduct(data);
+                                }}>&#9780;</button>
+                                <p>P-Name: {data.name.toUpperCase()}</p>
+                                <p>Retail: &#8369; {data.retail.toFixed(2)}</p>    
+                            </div>
+                        ))}
                     </div>
 
                     {/* Add product */}
@@ -192,40 +160,66 @@ function MainWindow({ style }) {
                             }}> 
                                 CLEAR
                             </button>
-                            <button onClick={() => {
-                                let newProdItem = inputNewProd.trim().toUpperCase(),
-                                    prodInvestment = inputInvest.trim(),
-                                    prodINumber = inputInvestNum.trim(),
-                                    prodWSale = inputWholeSale.trim(),
-                                    prodWSNumber = inputWholeSaleNum.trim(),
-                                    prodRetail = inputRetail.trim(),
-                                    prodRNumber = inputRetailNum.trim()
-                                
-                                if(!newProdItem || !prodInvestment || !prodINumber || !prodWSale || !prodWSNumber || !prodRetail || !prodRNumber){
+                            <button type='submit' onClick={(e) => { 
+                                e.preventDefault();
+
+                                const newProdItem = inputNewProd.trim();
+                                const prodInvestment = inputInvest.trim();
+                                const prodINumber = inputInvestNum.trim();
+                                const prodWSale = inputWholeSale.trim();
+                                const prodWSNumber = inputWholeSaleNum.trim();
+                                const prodRetail = inputRetail.trim();
+                                const prodRNumber = inputRetailNum.trim();
+                        
+                                if (!newProdItem || !prodInvestment || !prodINumber || !prodWSale || !prodWSNumber || !prodRetail || !prodRNumber) {
                                     alert("All fields are required!");
                                     return;
                                 }
-
-                                let findMatchProd = dataList.find(data => data.prodname === newProdItem)
-
-                                if(findMatchProd){
-                                    alert('Already have that Product Name');
-                                }else{
-                                    dataList.push({
-                                        prodname: newProdItem,
-                                        investment: prodInvestment,
-                                        inumber: prodINumber,
-                                        wholesale: prodWSale,
-                                        wsnumber: prodWSNumber,
-                                        retail: prodRetail,
-                                        rnumber: prodRNumber
+                        
+                                fetch('https://store-system-3kic.onrender.com/store')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        let findMatchProd = data.find(product => product.name === newProdItem);
+                        
+                                        if (findMatchProd) {
+                                            alert('Already have that Product Name');
+                                        } else {
+                                            fetch('https://store-system-3kic.onrender.com/store', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify({
+                                                    name: newProdItem,
+                                                    investment: prodInvestment,
+                                                    num_invest: prodINumber,
+                                                    wholesale: prodWSale,
+                                                    num_wsale: prodWSNumber,
+                                                    retail: prodRetail,
+                                                    num_retail: prodRNumber
+                                                })
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                console.log('Success:', data);
+                                                setDataList([...dataList, {
+                                                    name: newProdItem,
+                                                    investment: prodInvestment,
+                                                    num_invest: prodINumber,
+                                                    wholesale: prodWSale,
+                                                    num_wsale: prodWSNumber,
+                                                    retail: prodRetail,
+                                                    num_retail: prodRNumber
+                                                }]);
+                                                clearData();
+                                            })
+                                            .catch((error) => {
+                                                console.error('Error:', error);
+                                            });
+                                        }
                                     })
-                                }
-
-                                setDataProdList(dataList);
-                                clearData();
-                                console.log(dataList)
-                            }}>
+                                    .catch(error => console.error('Error fetching data:', error));
+                             }}>
                                 ADD
                             </button>
                         </div>

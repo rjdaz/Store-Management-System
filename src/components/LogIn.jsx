@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import './LogIn.css'
-import MainWindow from './mainwindow.jsx'
 
 export default function LogIn({ onLoginSuccess }) {
 
-    const uName = "DazStore",
-          pWord = "daz123";
+    const uName = "daz",
+          pWord = "123";
 
     const logInWind = document.getElementById('logInWindow');
 

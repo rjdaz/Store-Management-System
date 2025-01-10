@@ -100,7 +100,7 @@
     justify-content: space-around;
     z-index: -1;
     opacity: 0;
-    background-color: rgb(100, 228, 31);
+    background-color: rgb(107, 208, 52);
 }
 
 .confirm p {
@@ -108,7 +108,7 @@
 }
 
 .confirm span {
-    color: red;
+    color: rgb(38, 0, 255);
     font-style:italic;
 }
 

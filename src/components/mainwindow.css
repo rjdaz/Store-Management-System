@@ -2,8 +2,8 @@
     position: absolute;
     width: 95%;
     height: 100%;
-    z-index: -1;
-    opacity: 0;
+    z-index: 1;
+    opacity: 1;
     transition: opacity 0.5s ease, z-index 0.5s ease;
 
     background-color: #55679C;
@@ -172,6 +172,15 @@
 .addItem label {
     font-size: 15pt;
     margin-bottom: 2%;
+}
+
+.addItem form {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .btnAddItem {
