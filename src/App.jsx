@@ -6,10 +6,15 @@ import MainWindow from "./components/mainwindow.jsx"
 function App() {
   const [data, setData] = React.useState([]);
   useEffect(() => {
-    fetch("https://store-management-system-amkc.onrender.com/store")
-      .then(response => response.json())
+    fetch("https://store-management-system-amkc.onrender.com/api/store")
+      .then(response => {
+        if (!response.ok) {
+          return response.text().then(text => { throw new Error(`Network response was not ok: ${response.status} - ${text}`); });
+        }
+        return response.json();
+      })
       .then(data => setData(data))
-      .catch(err => console.error(err));
+      .catch(err => console.error('Error fetching data:', err));
   }, []);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
