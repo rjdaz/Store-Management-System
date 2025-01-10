@@ -18,7 +18,12 @@ function MainWindow({ style }) {
 
     useEffect(() => {
         fetch('https://store-management-system-amkc.onrender.com/store')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => setDataList(data))
             .catch(error => console.error('Error fetching data:', error));
     }, []);
