@@ -36,7 +36,7 @@ function Update({ selectedProduct, closeUpdateWindow }) {
         };
 
         try {
-            const response = await axios.patch(`https://store-management-system-amkc.onrender.com/prod/${selectedProduct.id}`, updatedProduct);
+            const response = await axios.patch(`https://store-management-system-amkc.onrender.com/Store-Management-System/prod/${selectedProduct.id}`, updatedProduct);
             console.log('Updated product:', response.data);
             alert('Product updated successfully!');
             closeUpdateWindow();
@@ -53,7 +53,7 @@ function Update({ selectedProduct, closeUpdateWindow }) {
     };
 
     const deleteItem = () => {
-        fetch(`https://store-management-system-amkc.onrender.com/prod/${selectedProduct.id}`, {
+        fetch(`https://store-management-system-amkc.onrender.com/Store-Management-System/prod/${selectedProduct.id}`, {
             method: 'DELETE',
         })
         .then(response => response.json())

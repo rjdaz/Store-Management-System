@@ -22,9 +22,16 @@ function MainWindow({ style }) {
                 if (!response.ok) {
                     return response.text().then(text => { throw new Error(`Network response was not ok: ${response.status} - ${text}`); });
                 }
-                return response.json();
+                return response.text(); // Change to text to handle potential HTML response
             })
-            .then(data => setDataList(data))
+            .then(text => {
+                try {
+                    const data = JSON.parse(text); // Parse JSON safely
+                    setDataList(data);
+                } catch (error) {
+                    throw new Error('Error parsing JSON: ' + error.message);
+                }
+            })
             .catch(error => console.error('Error fetching data:', error));
     }, []);
 
