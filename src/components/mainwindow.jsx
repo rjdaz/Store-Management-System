@@ -22,19 +22,26 @@ function MainWindow({ style }) {
                 if (!response.ok) {
                     return response.text().then(text => { throw new Error(`Network response was not ok: ${response.status} - ${text}`); });
                 }
-                return response.text(); // Change to text to handle potential HTML response
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    return response.json(); // Parse JSON directly if content-type is JSON
+                } else {
+                    return response.text(); // Otherwise, return text
+                }
             })
-            .then(text => {
-                console.log('Response text:', text); // Debugging line
-                if (text.startsWith('<')) {
-                    throw new Error('Received HTML instead of JSON');
+            .then(data => {
+                if (typeof data === 'string') {
+                    console.log('Response text:', data); // Debugging line
+                    if (data.startsWith('<')) {
+                        throw new Error('Received HTML instead of JSON');
+                    }
+                    try {
+                        data = JSON.parse(data); // Parse JSON safely
+                    } catch (error) {
+                        throw new Error('Error parsing JSON: ' + error.message);
+                    }
                 }
-                try {
-                    const data = JSON.parse(text); // Parse JSON safely
-                    setDataList(data);
-                } catch (error) {
-                    throw new Error('Error parsing JSON: ' + error.message);
-                }
+                setDataList(data);
             })
             .catch(error => console.error('Error fetching data:', error));
     }, []);
@@ -193,8 +200,29 @@ function MainWindow({ style }) {
                                 }
                         
                                 fetch('https://store-management-system-amkc.onrender.com/Store-Management-System/prod')
-                                    .then(response => response.json())
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            return response.text().then(text => { throw new Error(`Network response was not ok: ${response.status} - ${text}`); });
+                                        }
+                                        const contentType = response.headers.get("content-type");
+                                        if (contentType && contentType.indexOf("application/json") !== -1) {
+                                            return response.json(); // Parse JSON directly if content-type is JSON
+                                        } else {
+                                            return response.text(); // Otherwise, return text
+                                        }
+                                    })
                                     .then(data => {
+                                        if (typeof data === 'string') {
+                                            console.log('Response text:', data); // Debugging line
+                                            if (data.startsWith('<')) {
+                                                throw new Error('Received HTML instead of JSON');
+                                            }
+                                            try {
+                                                data = JSON.parse(data); // Parse JSON safely
+                                            } catch (error) {
+                                                throw new Error('Error parsing JSON: ' + error.message);
+                                            }
+                                        }
                                         let findMatchProd = data.find(product => product.name === newProdItem);
                         
                                         if (findMatchProd) {

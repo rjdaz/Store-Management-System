@@ -11,9 +11,27 @@ function App() {
         if (!response.ok) {
           return response.text().then(text => { throw new Error(`Network response was not ok: ${response.status} - ${text}`); });
         }
-        return response.json();
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          return response.json(); // Parse JSON directly if content-type is JSON
+        } else {
+          return response.text(); // Otherwise, return text
+        }
       })
-      .then(data => setData(data))
+      .then(data => {
+        if (typeof data === 'string') {
+          console.log('Response text:', data); // Debugging line
+          if (data.startsWith('<')) {
+            throw new Error('Received HTML instead of JSON');
+          }
+          try {
+            data = JSON.parse(data); // Parse JSON safely
+          } catch (error) {
+            throw new Error('Error parsing JSON: ' + error.message);
+          }
+        }
+        setData(data);
+      })
       .catch(err => console.error('Error fetching data:', err));
   }, []);
 
