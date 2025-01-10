@@ -6,7 +6,7 @@ import MainWindow from "./components/mainwindow.jsx"
 function App() {
   const [data, setData] = React.useState([]);
   useEffect(() => {
-    fetch("https://store-management-system-amkc.onrender.com/api/store")
+    fetch("https://store-management-system-amkc.onrender.com/prod")
       .then(response => {
         if (!response.ok) {
           return response.text().then(text => { throw new Error(`Network response was not ok: ${response.status} - ${text}`); });
